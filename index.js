@@ -6,6 +6,27 @@ const db = require('./data/db.js');
 const server = express();
 const port = 5000;
 
+server.use(express.json());
+
+server.post('/api/users', (req, res) => {
+  const user = req.body;
+  console.log(user);
+  
+  if (!req.body.name || !req.body.bio) {
+    res.status(400).send({errorMessage: 'Please provide name and bio for the user.'})
+  } else {
+    db.insert(user) 
+    .then(response => {
+      console.log(response);
+      res.status(201).send(response);
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).send({error : 'There was an error while saving the user to the database'});
+    })
+  }
+});
+
 server.get('/api/users', (req, res) => {
   db.find()
     .then(users => {
