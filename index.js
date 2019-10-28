@@ -60,7 +60,7 @@ server.get('/api/users/:id', (req, res) => {
 
 server.delete('/api/users/:id', (req, res) => {
   const id = req.params.id;
-  console.log(id);
+  // console.log(id);
 
   db.remove(id) 
     .then(response => {
@@ -77,7 +77,31 @@ server.delete('/api/users/:id', (req, res) => {
     }) 
 })
 
+server.put('/api/users/:id', (req, res) => {
+  const id = req.params.id;
+  console.log('user id to be updated ', id);
 
+  const user = req.body;
+  console.log('update details ', user);
+
+  if(!user.name || !user.bio) {
+    res.status(400).send({errorMessage: 'Please provide name and bio for the user.'});
+  } else {
+    db.update(id, user)
+    .then(response => {
+      console.log('db response for update', response);
+      if (response === 0) {
+        res.status(404).send({errorMessage: 'The user with the specified ID does not exist'});
+      } else {
+        res.status(200).send(user);
+      } 
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).send({error: 'The user information could not be modified.'});
+    })
+  }  
+});
 
 
 
